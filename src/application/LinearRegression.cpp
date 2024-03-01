@@ -1393,14 +1393,15 @@ void LinearRegression::generateCode()
         generateConvergenceLoop()+
         "\n"+offset(2)+"int64_t endProcess = duration_cast<milliseconds>("+
         "system_clock::now().time_since_epoch()).count()-startProcess;\n"+
-        offset(2)+"std::cout << \"Run Application: \"+"+
-        "std::to_string(endProcess)+\"ms.\\n\";\n\n"+
         offset(2)+"std::ofstream ofs(\"times.txt\",std::ofstream::out | " +
         "std::ofstream::app);\n"+
         offset(2)+"ofs << \"\\t\" << endProcess << std::endl;\n"+
         offset(2)+"ofs.close();\n\n"+
         offset(2)+"printOutput();\n"+
         offset(2)+"std::cout << \"numberOfIterations: \" << iteration << \"\\n\";\n"+
+        offset(2)+"std::cout << \"Run Application: \"+"+
+        "std::to_string(endProcess)+\"ms.\\n\";\n"+
+        offset(2)+"std::cout << \"Train RMSE: \" << sqrt(error) << std::endl;\n"+
         offset(2)+"delete[] update;\n"+
         offset(2)+"evaluateModel();\n"+
         offset(1)+"}\n";
@@ -1559,15 +1560,26 @@ std::string LinearRegression::generateTestDataEvaluation()
         attributeString+offset(2)+"Test_tuple(const std::string& tuple)\n"+
         offset(2)+"{\n"+attrConstruct+offset(2)+"}\n"+offset(1)+"};\n\n";
 
-    std::string loadFunction = offset(1)+"void loadTestDataset("+
+    std::string loadTestFunction = offset(1)+"void loadTestDataset("+
         "std::vector<Test_tuple>& TestDataset)\n"+offset(1)+"{\n"+
         offset(2)+"std::ifstream input;\n"+offset(2)+"std::string line;\n"+
-        offset(2)+"input.open(PATH_TO_DATA + \"test_data.tbl\");\n"+
+        offset(2)+"input.open(PATH_TO_DATA + \"/test_data.tbl\");\n"+
         offset(2)+"if (!input)\n"+offset(2)+"{\n"+
-        offset(3)+"std::cerr << \"TestDataset.tbl does is not exist.\\n\";\n"+
+        offset(3)+"std::cerr << \"test_data.tbl does is not exist.\\n\";\n"+
         offset(3)+"exit(1);\n"+offset(2)+"}\n"+
         offset(2)+"while(getline(input, line))\n"+
         offset(3)+"TestDataset.push_back(Test_tuple(line));\n"+
+        offset(2)+"input.close();\n"+offset(1)+"}\n\n";
+
+    std::string loadTrainFunction = offset(1)+"void loadTrainDataset("+
+        "std::vector<Test_tuple>& TrainDataset)\n"+offset(1)+"{\n"+
+        offset(2)+"std::ifstream input;\n"+offset(2)+"std::string line;\n"+
+        offset(2)+"input.open(PATH_TO_DATA + \"/train_data.tbl\");\n"+
+        offset(2)+"if (!input)\n"+offset(2)+"{\n"+
+        offset(3)+"std::cerr << \"train_data.tbl does is not exist.\\n\";\n"+
+        offset(3)+"exit(1);\n"+offset(2)+"}\n"+
+        offset(2)+"while(getline(input, line))\n"+
+        offset(3)+"TrainDataset.push_back(Test_tuple(line));\n"+
         offset(2)+"input.close();\n"+offset(1)+"}\n\n";
     
     std::string prediction = "";
@@ -1589,15 +1601,32 @@ std::string LinearRegression::generateTestDataEvaluation()
     std::string evalFunction = offset(1)+"void evaluateModel()\n"+offset(1)+"{\n"+
         offset(2)+"std::vector<Test_tuple> TestDataset;\n"+
         offset(2)+"loadTestDataset(TestDataset);\n"+
-        offset(2)+"double diff, error = 0.0;\n"+
+        offset(2)+"double diff, error, pred = 0.0;\n"+
+        offset(2)+"int64_t startProcess, endProcess = 0;\n"+
         offset(2)+"for (Test_tuple& tuple : TestDataset)\n"+offset(2)+"{\n"+
+        offset(3)+"startProcess = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();\n"+
+        offset(3)+"pred = "+prediction+";\n"+
+        offset(3)+"endProcess += duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()-startProcess;\n"+
         offset(3)+"diff = params[0]+"+prediction+";\n"+
         offset(3)+"error += diff * diff;\n"+
         offset(2)+"}\n"+
         offset(2)+"error /= TestDataset.size();\n"+
-        offset(2)+"std::cout << \"RMSE: \" << sqrt(error) << std::endl;\n"+
+        offset(2)+"std::cout << \"Test RMSE: \" << sqrt(error) << std::endl;\n"+
+        offset(2)+"std::cout << \"TestPredTime: \" << std::to_string(endProcess) << std::endl;\n"+
+        offset(2)+"TestDataset.clear();\n"+
+        offset(2)+"std::vector<Test_tuple> TrainDataset;\n"+
+        offset(2)+"loadTrainDataset(TrainDataset);\n"+
+        offset(2)+"pred = 0.0;\n"+
+        offset(2)+"startProcess, endProcess = 0;\n"+
+        offset(2)+"for (Test_tuple& tuple : TrainDataset)\n"+offset(2)+"{\n"+
+        offset(3)+"startProcess = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();\n"+
+        offset(3)+"pred = "+prediction+";\n"+
+        offset(3)+"endProcess += duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()-startProcess;\n"+
+        offset(2)+"}\n"+
+        offset(2)+"std::cout << \"TrainPredTime: \" << std::to_string(endProcess) << std::endl;\n"+
+        offset(2)+"TrainDataset.clear();\n"+
         offset(1)+"}\n";
 
-    return testTuple + loadFunction + evalFunction;
+    return testTuple + loadTestFunction + loadTrainFunction + evalFunction;
 }
 
