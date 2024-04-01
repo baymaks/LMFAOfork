@@ -1401,7 +1401,7 @@ void LinearRegression::generateCode()
         offset(2)+"std::cout << \"numberOfIterations: \" << iteration << \"\\n\";\n"+
         offset(2)+"std::cout << \"Run Application: \"+"+
         "std::to_string(endProcess)+\"ms.\\n\";\n"+
-        offset(2)+"std::cout << \"Train RMSE: \" << sqrt(error) << std::endl;\n"+
+        //offset(2)+"std::cout << \"Train RMSE: \" << sqrt(error) << std::endl;\n"+
         offset(2)+"delete[] update;\n"+
         offset(2)+"evaluateModel();\n"+
         offset(1)+"}\n";
@@ -1622,7 +1622,10 @@ std::string LinearRegression::generateTestDataEvaluation()
         offset(3)+"startProcess = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();\n"+
         offset(3)+"pred = "+prediction+";\n"+
         offset(3)+"endProcess += duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count()-startProcess;\n"+
+        offset(3)+"diff = params[0]+"+prediction+";\n"+
+        offset(3)+"error += diff * diff;\n"+
         offset(2)+"}\n"+
+        offset(2)+"std::cout << \"Train RMSE: \" << sqrt(error) << std::endl;\n"+
         offset(2)+"std::cout << \"TrainPredTime: \" << std::to_string(endProcess) << std::endl;\n"+
         offset(2)+"TrainDataset.clear();\n"+
         offset(1)+"}\n";
