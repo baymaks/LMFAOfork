@@ -53,6 +53,8 @@ namespace multifaq
         extern std::string TREEDECOMP_CONF;
 
         extern std::string SCHEMA_CONF;
+
+        extern std::string ITERATIONS; //ADDED
     }
 
     namespace dir

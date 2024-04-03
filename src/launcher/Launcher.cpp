@@ -25,6 +25,7 @@
 std::string multifaq::config::FEATURE_CONF = "";
 std::string multifaq::config::TREEDECOMP_CONF = "";
 std::string multifaq::config::SCHEMA_CONF = "";
+std::string multifaq::config::ITERATIONS = ""; //ADDED
 
 bool multifaq::cppgen::MULTI_OUTPUT;
 bool multifaq::cppgen::RESORT_RELATIONS;
@@ -81,6 +82,8 @@ shared_ptr<CodeGenerator> Launcher::getCodeGenerator()
 //     )
 int Launcher::launch(boost::program_options::variables_map& vm)
 {
+    ITERATIONS = vm["iter"].as<std::string>(); //ADDED
+
     /* Define the Feature Conf File */
     FEATURE_CONF = multifaq::dir::PATH_TO_FILES+"/"+vm["feat"].as<std::string>(); 
 

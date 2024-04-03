@@ -78,10 +78,13 @@ int main(int argc, char *argv[])
        ("clusters,k", boost::program_options::value<size_t>()->default_value(5),
         "k for k-means algorithm. (Default = 5).")
        ("kappa", boost::program_options::value<size_t>(),
-        "kappa for k-means algorithm. (Default = k).");
+        "kappa for k-means algorithm. (Default = k).")
        /* Option for parallellization. */
        // ("degree", boost::program_options::value<int>()->default_value(1),
        //  "Degree of interactions for regression models and FMs. (Default = 1).");
+       /* Option to set the iterations for the model to go through. ADDED*/
+       ("iter", boost::program_options::value<std::string>()->default_value("1000"),
+        "Iterations for the model to go through.");
 
 
    /* Register previous options and do command line parsing. */

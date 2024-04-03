@@ -1493,7 +1493,7 @@ std::string LinearRegression::generateConvergenceLoop()
         offset(3)+"stepSize = computeStepSize();\n"+
         offset(3)+"previousError = error;\n"+
         offset(3)+"++iteration;\n"+
-        offset(2)+"} while (iteration < 1000);\n\n";
+        offset(2)+"} while (iteration < "+ multifaq::config::ITERATIONS +");\n\n";
 }
 
 
@@ -1616,8 +1616,8 @@ std::string LinearRegression::generateTestDataEvaluation()
         offset(2)+"TestDataset.clear();\n"+
         offset(2)+"std::vector<Test_tuple> TrainDataset;\n"+
         offset(2)+"loadTrainDataset(TrainDataset);\n"+
-        offset(2)+"pred = 0.0;\n"+
-        offset(2)+"startProcess, endProcess = 0;\n"+
+        offset(2)+"diff = 0.0, error = 0.0, pred = 0.0;\n"+
+        offset(2)+"startProcess = 0, endProcess = 0;\n"+
         offset(2)+"for (Test_tuple& tuple : TrainDataset)\n"+offset(2)+"{\n"+
         offset(3)+"startProcess = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();\n"+
         offset(3)+"pred = "+prediction+";\n"+
@@ -1625,6 +1625,7 @@ std::string LinearRegression::generateTestDataEvaluation()
         offset(3)+"diff = params[0]+"+prediction+";\n"+
         offset(3)+"error += diff * diff;\n"+
         offset(2)+"}\n"+
+        offset(2)+"error /= TrainDataset.size();\n"+
         offset(2)+"std::cout << \"Train RMSE: \" << sqrt(error) << std::endl;\n"+
         offset(2)+"std::cout << \"TrainPredTime: \" << std::to_string(endProcess) << std::endl;\n"+
         offset(2)+"TrainDataset.clear();\n"+
